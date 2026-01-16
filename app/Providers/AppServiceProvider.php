@@ -1,0 +1,58 @@
+<?php
+
+namespace App\Providers;
+
+use App\Models\Doctor;
+use App\Models\Offer;
+use App\Models\Course;
+use App\Models\Section;
+use App\Models\Semester;
+use App\Models\Student;
+use App\Models\Teacher;
+use App\Models\ContactMessage;
+use App\Observers\DoctorObserver;
+use App\Observers\SectionObserver;
+use App\Observers\SemesterObserver;
+use App\Observers\StudentObserver;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
+use App\Policies\ContactMessagePolicy;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        //
+
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //todo make general route binding for soft deleted model
+        //todo move logic to route service provider
+        // Route::bind('contactMessage', function ($id) {
+        //     return ContactMessage::withTrashed()->findOrFail($id);
+        // });
+        // Route::bind('trashed_offer', function ($id) {
+        //     return Offer::onlyTrashed()->findOrFail($id);
+        // });
+
+        //just for testing 
+        \DB::listen(function ($query) {
+            \Log::info($query->sql, $query->bindings);
+        });
+        
+        Section::observe(SectionObserver::class);
+        Semester::observe(SemesterObserver::class);
+        Student::observe(StudentObserver::class);
+        Doctor::observe(DoctorObserver::class);
+
+    }
+}
